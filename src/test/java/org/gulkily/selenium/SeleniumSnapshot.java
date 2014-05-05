@@ -28,7 +28,12 @@ public class SeleniumSnapshot {
         System.out.println("Setting up database connection...");
 
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/testdata?user=root&password=admin");
+            String mysqlHost = _prop.getString("mysqlhost");
+            String mysqlDb = _prop.getString("mysqldatabase");
+            String mysqlUsername = _prop.getString("root");
+            String mysqlPassword = _prop.getString("mysqlpassword");
+
+            conn = DriverManager.getConnection("jdbc:mysql://"+mysqlHost+"/"+mysqlDb+"?user="+mysqlUsername+"&password="+mysqlPassword);
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -36,29 +41,29 @@ public class SeleniumSnapshot {
         }
 
     }
-
-    private static void takeScreenshot() {
-        takeScreenshot("");
-    }
-
-    private static void takeScreenshot(String screenshotName) {
-        File screenshot = new File("screenshots" + File.separator + System.currentTimeMillis() + "_" + screenshotName + ".png");
-        if (!screenshot.exists()) {
-            new File(screenshot.getParent()).mkdirs();
-            try {
-                screenshot.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            new FileOutputStream(screenshot).write(((TakesScreenshot) SeleniumBase.getDriver()).getScreenshotAs(OutputType.BYTES));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//
+//    private static void takeScreenshot() {
+//        takeScreenshot("");
+//    }
+//
+//    private static void takeScreenshot(String screenshotName) {
+//        File screenshot = new File("screenshots" + File.separator + System.currentTimeMillis() + "_" + screenshotName + ".png");
+//        if (!screenshot.exists()) {
+//            new File(screenshot.getParent()).mkdirs();
+//            try {
+//                screenshot.createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        try {
+//            new FileOutputStream(screenshot).write(((TakesScreenshot) SeleniumBase.getDriver()).getScreenshotAs(OutputType.BYTES));
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private static int createNewSnapshot(String testName, String testState, String pageUrl, String browserName, String browserVersion, Integer browserWidth, Integer browserHeight) {
         int snapshotId = 0;
