@@ -1,15 +1,10 @@
 package org.gulkily.selenium;
 
 import com.lazerycode.selenium.BrowserType;
-import com.lazerycode.selenium.SeleniumBase;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.BeforeSuite;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -17,8 +12,6 @@ import java.util.Date;
 public class SeleniumSnapshot {
 
     private static ResourceBundle _prop = ResourceBundle.getBundle("dev");
-    private static BrowserType browserType;
-    private static List<WebDriver> webDrivers = Collections.synchronizedList(new ArrayList<WebDriver>());
 
     private static Connection conn;
 
@@ -68,10 +61,11 @@ public class SeleniumSnapshot {
     private static int createNewSnapshot(String testName, String testState, String pageUrl, String browserName, String browserVersion, Integer browserWidth, Integer browserHeight) {
         int snapshotId = 0;
 
+        if (conn == null) {
+            setupDbConnection();
+        }
+
         try {
-            if (conn == null) {
-                setupDbConnection();
-            }
 
             Date curDate = new Date();
             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -103,35 +97,82 @@ public class SeleniumSnapshot {
         return snapshotId;
     }
 
-    private static void checkPreviousElementStates(WebElement element, String testName, String testState, int browserWidth, int browserHeight) {
-        
-    }
+    private static void checkPreviousElementStates(WebElement element, String testName, String testState, int browserWidth) {
+        if (conn == null) {
+            setupDbConnection();
+        }
 
-    private static void recordElementState(WebElement element, Integer elementId, Integer snapshotId) {
         try {
-            if (conn == null) {
-                setupDbConnection();
-            }
-
             String elementTag = element.getTagName();
             String elementDomId = element.getAttribute("id");
             String elementDomClass = element.getAttribute("class");
 
             HashMap<String, String> elementState = new HashMap<String, String>();
 
-            elementState.put("height", String.valueOf(element.getSize().getHeight()));
-            elementState.put("width", String.valueOf(element.getSize().getWidth()));
-            elementState.put("x", String.valueOf(element.getLocation().getX()));
-            elementState.put("y", String.valueOf(element.getLocation().getY()));
-            elementState.put("class", element.getAttribute("class"));
-            elementState.put("id", element.getAttribute("id"));
-            elementState.put("border", element.getCssValue("border"));
-            elementState.put("font", element.getCssValue("font"));
-            elementState.put("padding", element.getCssValue("padding"));
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT elementstate.* FROM elementstate, snapshot WHERE " +
+                            "elementstate.snapshot_id = snapshot.snapshot_id " +
+                            "AND snapshot.test_name = ? " +
+                            "AND snapshot.test_state = ? " +
+                            "AND snapshot.browser_width = ? " +
+                            "AND elementstate.tag = ? " +
+                            "AND elementstate.dom_id = ? " +
+                            "AND elementstate.dom_class = ? "
+            );
 
-            if (elementTag == "a") {
-                elementState.put("href", element.getAttribute("href"));
-            }
+            stmt.setString(1, testName);
+            stmt.setString(2, testState);
+            stmt.setInt(3, browserWidth);
+            stmt.setString(4, elementTag);
+            stmt.setString(5, elementDomId);
+            stmt.setString(6, elementDomClass);
+
+            ResultSet elementDataPoints = stmt.executeQuery();
+
+            System.out.println(elementDataPoints.toString());
+
+            // @todo finish this function
+
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    private static HashMap<String, String> getElementState(WebElement element) {
+        HashMap<String, String> elementState = new HashMap<String, String>();
+
+        elementState.put("height", String.valueOf(element.getSize().getHeight()));
+        elementState.put("width", String.valueOf(element.getSize().getWidth()));
+        elementState.put("x", String.valueOf(element.getLocation().getX()));
+        elementState.put("y", String.valueOf(element.getLocation().getY()));
+        elementState.put("class", element.getAttribute("class"));
+        elementState.put("id", element.getAttribute("id"));
+        elementState.put("border", element.getCssValue("border"));
+        elementState.put("font", element.getCssValue("font"));
+        elementState.put("padding", element.getCssValue("padding"));
+
+        if (element.getTagName() == "a") {
+            elementState.put("href", element.getAttribute("href"));
+        }
+
+        return elementState;
+
+    }
+
+    private static void recordElementState(WebElement element, Integer elementId, Integer snapshotId) {
+        if (conn == null) {
+            setupDbConnection();
+        }
+
+        try {
+
+            String elementTag = element.getTagName();
+            String elementDomId = element.getAttribute("id");
+            String elementDomClass = element.getAttribute("class");
+
+            HashMap <String, String> elementState = getElementState(element);
 
             for (Map.Entry<String, String> elementStateItem : elementState.entrySet()) {
                 PreparedStatement stmt = conn.prepareStatement(
