@@ -11,7 +11,7 @@ import java.util.Date;
 
 public class SeleniumSnapshot {
 
-    private static ResourceBundle _prop = ResourceBundle.getBundle("dev");
+    //private static ResourceBundle _prop = ResourceBundle.getBundle("dev");
 
     private static Connection conn;
 
@@ -21,10 +21,16 @@ public class SeleniumSnapshot {
         System.out.println("Setting up database connection...");
 
         try {
-            String mysqlHost = _prop.getString("mysqlhost");
-            String mysqlDb = _prop.getString("mysqldatabase");
-            String mysqlUsername = _prop.getString("root");
-            String mysqlPassword = _prop.getString("mysqlpassword");
+//            String mysqlHost = _prop.getString("mysqlhost");
+//            String mysqlDb = _prop.getString("mysqldatabase");
+//            String mysqlUsername = _prop.getString("root");
+//            String mysqlPassword = _prop.getString("mysqlpassword");
+            // @todo fix ResourceBundle issue and make this come from properties again
+
+            String mysqlHost = ("mysqlhost");
+            String mysqlDb = ("mysqldatabase");
+            String mysqlUsername = ("root");
+            String mysqlPassword = ("mysqlpassword");
 
             conn = DriverManager.getConnection("jdbc:mysql://"+mysqlHost+"/"+mysqlDb+"?user="+mysqlUsername+"&password="+mysqlPassword);
         } catch (SQLException ex) {
@@ -97,7 +103,7 @@ public class SeleniumSnapshot {
         return snapshotId;
     }
 
-    private static void checkPreviousElementStates(WebElement element, String testName, String testState, int browserWidth) {
+    private static void getPreviousElementState(WebElement element, String testName, String testState, int browserWidth, int browserHeight, String browserName) {
         if (conn == null) {
             setupDbConnection();
         }
@@ -115,6 +121,8 @@ public class SeleniumSnapshot {
                             "AND snapshot.test_name = ? " +
                             "AND snapshot.test_state = ? " +
                             "AND snapshot.browser_width = ? " +
+                            "AND snapshot.browser_height =  " +
+                            "AND snapshot.browser_name = ? " +
                             "AND elementstate.tag = ? " +
                             "AND elementstate.dom_id = ? " +
                             "AND elementstate.dom_class = ? "
@@ -122,16 +130,17 @@ public class SeleniumSnapshot {
 
             stmt.setString(1, testName);
             stmt.setString(2, testState);
-            stmt.setInt(3, browserWidth);
-            stmt.setString(4, elementTag);
-            stmt.setString(5, elementDomId);
-            stmt.setString(6, elementDomClass);
+            stmt.setInt(   3, browserWidth);
+            stmt.setInt(   4, browserHeight);
+            stmt.setString(5, browserName);
+            stmt.setString(6, elementTag);
+            stmt.setString(7, elementDomId);
+            stmt.setString(8, elementDomClass);
 
             ResultSet elementDataPoints = stmt.executeQuery();
 
             System.out.println(elementDataPoints.toString());
 
-            // @todo finish this function
 
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
@@ -179,8 +188,8 @@ public class SeleniumSnapshot {
                         "INSERT INTO elementstate (snapshot_id, element_id, tag, datapoint, value, dom_id, dom_class) VALUES(?, ?, ?, ?, ?, ?, ?)"
                 );
 
-                stmt.setInt(1, snapshotId);
-                stmt.setInt(2, elementId);
+                stmt.setInt(   1, snapshotId);
+                stmt.setInt(   2, elementId);
                 stmt.setString(3, elementTag);
                 stmt.setString(4, elementStateItem.getKey());
                 stmt.setString(5, elementStateItem.getValue());

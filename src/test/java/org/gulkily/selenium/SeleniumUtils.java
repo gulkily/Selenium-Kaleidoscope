@@ -1,6 +1,7 @@
 package org.gulkily.selenium;
 
 import com.lazerycode.selenium.BrowserType;
+import com.mysql.jdbc.Connection;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -9,7 +10,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.sql.Connection;
+//import java.sql.Connection;
 import java.util.*;
 
 public class SeleniumUtils {
