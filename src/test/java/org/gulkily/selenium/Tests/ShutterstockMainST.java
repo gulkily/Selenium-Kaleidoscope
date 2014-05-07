@@ -32,11 +32,13 @@ public class ShutterstockMainST extends SeleniumBase {
 
             driver.get("http://www.shutterstock.com/");
 
-            SeleniumSnapshot.takePageSnapshot(driver, "shutterstockHomeTest");
+            SeleniumSnapshot.takePageSnapshot(driver, "shutterstockHomeTest", "init");
 
             List <String> brokenLinks = SeleniumUtils.findBrokenLinks(driver);
+            List <String> brokenImages = SeleniumUtils.findBrokenImages(driver);
 
             System.out.println("Broken links: " + brokenLinks.size());
+            System.out.println("Broken images: " + brokenImages.size());
         }
     }
 }

@@ -222,7 +222,7 @@ public class SeleniumSnapshot {
         }
     }
 
-    public static void takePageSnapshot(WebDriver driver, String testName) {
+    public static void takePageSnapshot(WebDriver driver, String testName, String testState) {
 
         List <WebElement> allPageElements = driver.findElements(By.xpath("//*"));
 
@@ -232,7 +232,7 @@ public class SeleniumSnapshot {
 
         int snapshotId = createNewSnapshot(
                 testName,
-                "init",
+                testState,
                 driver.getCurrentUrl(),
                 browserName,
                 browserVersion,
