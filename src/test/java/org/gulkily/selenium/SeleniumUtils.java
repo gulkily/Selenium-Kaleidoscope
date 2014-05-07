@@ -11,6 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 //import java.sql.Connection;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class SeleniumUtils {
@@ -21,23 +22,8 @@ public class SeleniumUtils {
 
     private static Connection conn;
 
-    private static List <WebElement> findBrokenImages(WebDriver driver) {
 
-        List allImages = driver.findElements(By.tagName("img"));
-//
-//        for (WebElement image : allImages) {
-//            String imageSrc = image.getAttribute("src").toString();
-//
-//            if (imageSrc != "") {
-//                int imageResponseCode = getHttpResponseCode(imageSrc);
-//            }
-//        }
-
-        return new LinkedList<WebElement>();
-
-    }
-
-    private static int getHttpResponseCode(String url) {
+    public static int getHttpResponseCode(String url) {
         CloseableHttpClient client = HttpClientBuilder.create().build();
 
         try {
@@ -46,6 +32,44 @@ public class SeleniumUtils {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    public static List findBrokenLinks(WebDriver driver) {
+        List <WebElement> allLinks = driver.findElements(By.xpath("a"));
+
+        List <String> brokenLinks = new LinkedList<String>();
+
+        for (WebElement e : allLinks) {
+            String href = e.getAttribute("href");
+
+            if (href != null && href != "") {
+                if (getHttpResponseCode(href) != 200) {
+                    brokenLinks.add(href);
+                }
+
+            }
+        }
+
+        return brokenLinks;
+    }
+
+    public static List findBrokenImages(WebDriver driver) {
+        List <WebElement> allLinks = driver.findElements(By.xpath("img"));
+
+        List <String> brokenLinks = new LinkedList<String>();
+
+        for (WebElement e : allLinks) {
+            String href = e.getAttribute("src");
+
+            if (href != null && href != "") {
+                if (getHttpResponseCode(href) != 200) {
+                    brokenLinks.add(href);
+                }
+
+            }
+        }
+
+        return brokenLinks;
     }
 
 }

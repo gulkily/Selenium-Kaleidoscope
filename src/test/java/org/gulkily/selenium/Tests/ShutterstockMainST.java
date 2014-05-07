@@ -3,6 +3,7 @@ package org.gulkily.selenium.Tests;
 import com.lazerycode.selenium.ScreenshotListener;
 import com.lazerycode.selenium.SeleniumBase;
 import org.gulkily.selenium.SeleniumSnapshot;
+import org.gulkily.selenium.SeleniumUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Listeners;
@@ -32,6 +33,10 @@ public class ShutterstockMainST extends SeleniumBase {
             driver.get("http://www.shutterstock.com/");
 
             SeleniumSnapshot.takePageSnapshot(driver, "shutterstockHomeTest");
+
+            List <String> brokenLinks = SeleniumUtils.findBrokenLinks(driver);
+
+            System.out.println("Broken links: " + brokenLinks.size());
         }
     }
 }

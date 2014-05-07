@@ -1,6 +1,7 @@
 package org.gulkily.selenium;
 
 import com.lazerycode.selenium.BrowserType;
+import com.mysql.jdbc.ResultSetRow;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.BeforeSuite;
@@ -27,10 +28,10 @@ public class SeleniumSnapshot {
 //            String mysqlPassword = _prop.getString("mysqlpassword");
             // @todo fix ResourceBundle issue and make this come from properties again
 
-            String mysqlHost = ("mysqlhost");
-            String mysqlDb = ("mysqldatabase");
+            String mysqlHost = ("127.0.0.1");
+            String mysqlDb = ("testdata");
             String mysqlUsername = ("root");
-            String mysqlPassword = ("mysqlpassword");
+            String mysqlPassword = ("admin");
 
             conn = DriverManager.getConnection("jdbc:mysql://"+mysqlHost+"/"+mysqlDb+"?user="+mysqlUsername+"&password="+mysqlPassword);
         } catch (SQLException ex) {
@@ -117,12 +118,12 @@ public class SeleniumSnapshot {
 
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT elementstate.* FROM elementstate, snapshot WHERE " +
-                            "elementstate.snapshot_id = snapshot.snapshot_id " +
+                            "elementstate.snapshot_id = snapshot.id " +
                             "AND snapshot.test_name = ? " +
                             "AND snapshot.test_state = ? " +
                             "AND snapshot.browser_width = ? " +
-                            "AND snapshot.browser_height =  " +
-                            "AND snapshot.browser_name = ? " +
+                            "AND snapshot.browser_height = ? " +
+                            "AND snapshot.browser = ? " +
                             "AND elementstate.tag = ? " +
                             "AND elementstate.dom_id = ? " +
                             "AND elementstate.dom_class = ? "
@@ -137,9 +138,16 @@ public class SeleniumSnapshot {
             stmt.setString(7, elementDomId);
             stmt.setString(8, elementDomClass);
 
-            ResultSet elementDataPoints = stmt.executeQuery();
+            ResultSet rsElementDataPoints = stmt.executeQuery();
 
-            System.out.println(elementDataPoints.toString());
+            while (rsElementDataPoints.next()) {
+
+                System.out.println(rsElementDataPoints.getString(1));
+            }
+
+
+
+
 
 
         } catch (SQLException ex) {
@@ -152,25 +160,30 @@ public class SeleniumSnapshot {
     private static HashMap<String, String> getElementState(WebElement element) {
         HashMap<String, String> elementState = new HashMap<String, String>();
 
-        elementState.put("height", String.valueOf(element.getSize().getHeight()));
-        elementState.put("width", String.valueOf(element.getSize().getWidth()));
-        elementState.put("x", String.valueOf(element.getLocation().getX()));
-        elementState.put("y", String.valueOf(element.getLocation().getY()));
-        elementState.put("class", element.getAttribute("class"));
-        elementState.put("id", element.getAttribute("id"));
-        elementState.put("border", element.getCssValue("border"));
-        elementState.put("font", element.getCssValue("font"));
-        elementState.put("padding", element.getCssValue("padding"));
+        if (element.isDisplayed()) {
 
-        if (element.getTagName() == "a") {
-            elementState.put("href", element.getAttribute("href"));
+            elementState.put("height", String.valueOf(element.getSize().getHeight()));
+            elementState.put("width", String.valueOf(element.getSize().getWidth()));
+            elementState.put("x", String.valueOf(element.getLocation().getX()));
+            elementState.put("y", String.valueOf(element.getLocation().getY()));
+            elementState.put("class", element.getAttribute("class"));
+            elementState.put("id", element.getAttribute("id"));
+            elementState.put("border", element.getCssValue("border"));
+            elementState.put("font", element.getCssValue("font"));
+            elementState.put("padding", element.getCssValue("padding"));
+
+            if (element.getTagName() == "a") {
+                elementState.put("href", element.getAttribute("href"));
+            }
+        } else {
+            elementState.put("displayed", "false");
         }
 
         return elementState;
 
     }
 
-    private static void recordElementState(WebElement element, Integer elementId, Integer snapshotId) {
+    private static void recordElementState(WebElement element, Integer elementId, Integer snapshotId, String testName) {
         if (conn == null) {
             setupDbConnection();
         }
@@ -197,6 +210,10 @@ public class SeleniumSnapshot {
                 stmt.setString(7, elementDomClass);
 
                 stmt.execute();
+
+                //getPreviousElementState(element, testName, "init", 800, 600, "firefox");
+
+
             }
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
@@ -224,12 +241,14 @@ public class SeleniumSnapshot {
         );
         int elementId = 0;
 
-        for (WebElement el : allPageElements) {
-            if (el.isDisplayed()) {
-                elementId++;
+        int elementCount = allPageElements.size();
 
-                recordElementState(el, elementId, snapshotId);
-            }
+        for (WebElement el : allPageElements) {
+            elementId++;
+
+            System.out.print("Recording element " + elementId + "/" + elementCount + "... ");
+
+            recordElementState(el, elementId, snapshotId, testName);
         }
     }
 
