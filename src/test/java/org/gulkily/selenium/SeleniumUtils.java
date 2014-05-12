@@ -36,7 +36,7 @@ public class SeleniumUtils {
     }
 
     public static List findBrokenLinks(WebDriver driver) {
-        List <WebElement> allLinks = driver.findElements(By.xpath("a"));
+        List <WebElement> allLinks = driver.findElements(By.tagName("a"));
 
         List <String> brokenLinks = new LinkedList<String>();
 
@@ -55,7 +55,7 @@ public class SeleniumUtils {
     }
 
     public static List findBrokenImages(WebDriver driver) {
-        List <WebElement> allLinks = driver.findElements(By.xpath("img"));
+        List <WebElement> allLinks = driver.findElements(By.tagName("img"));
 
         List <String> brokenLinks = new LinkedList<String>();
 

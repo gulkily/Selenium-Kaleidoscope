@@ -159,6 +159,7 @@ public class SeleniumSnapshot {
 
     private static HashMap<String, String> getElementState(WebElement element) {
         HashMap<String, String> elementState = new HashMap<String, String>();
+        // @todo make this more flexible than just strings
 
         if (element.isDisplayed()) {
 
@@ -174,6 +175,17 @@ public class SeleniumSnapshot {
 
             if (element.getTagName() == "a") {
                 elementState.put("href", element.getAttribute("href"));
+            }
+
+            if (element.getTagName() == "ul" || element.getTagName() == "ol") {
+                elementState.put("itemcount", element.findElements(By.tagName("li")).size()+"");
+            }
+
+            if (element.getTagName() == "table") {
+                List <WebElement> tableRows = element.findElements(By.tagName("tr"));
+                elementState.put("rowcount", (tableRows.size()+""));
+
+                //@todo add column count(s)
             }
         } else {
             elementState.put("displayed", "false");
