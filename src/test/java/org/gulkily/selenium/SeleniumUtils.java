@@ -70,6 +70,7 @@ public class SeleniumUtils {
             }
         }
 
+
         return brokenLinks;
     }
 

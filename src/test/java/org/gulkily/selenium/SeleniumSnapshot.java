@@ -163,6 +163,7 @@ public class SeleniumSnapshot {
 
         if (element.isDisplayed()) {
 
+
             elementState.put("height", String.valueOf(element.getSize().getHeight()));
             elementState.put("width", String.valueOf(element.getSize().getWidth()));
             elementState.put("x", String.valueOf(element.getLocation().getX()));
