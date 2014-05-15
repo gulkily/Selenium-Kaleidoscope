@@ -65,6 +65,13 @@ public class SeleniumSnapshot {
 //        }
 //    }
 
+    private static String getSqlDate(Date date) {
+
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+
+    }
+
     private static int createNewSnapshot(String testName, String testState, String pageUrl, String browserName, String browserVersion, Integer browserWidth, Integer browserHeight) {
         int snapshotId = 0;
 
@@ -174,15 +181,15 @@ public class SeleniumSnapshot {
             elementState.put("font", element.getCssValue("font"));
             elementState.put("padding", element.getCssValue("padding"));
 
-            if (element.getTagName() == "a") {
+            if (element.getTagName().equals("a")) {
                 elementState.put("href", element.getAttribute("href"));
             }
 
-            if (element.getTagName() == "ul" || element.getTagName() == "ol") {
+            if (element.getTagName().equals("ul") || element.getTagName().equals("ol")) {
                 elementState.put("itemcount", element.findElements(By.tagName("li")).size()+"");
             }
 
-            if (element.getTagName() == "table") {
+            if (element.getTagName().equals("table")) {
                 List <WebElement> tableRows = element.findElements(By.tagName("tr"));
                 elementState.put("rowcount", (tableRows.size()+""));
 
@@ -228,6 +235,35 @@ public class SeleniumSnapshot {
 
 
             }
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+    }
+
+    public static void logError(String errorText) {
+        if (conn == null) {
+            setupDbConnection();
+        }
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(
+                    "INSERT INTO errorlog (error_text, error_time) VALUES(?, ?)"
+            );
+
+            stmt.setString(1, errorText);
+            stmt.setString(2, getSqlDate(new Date()));
+//            stmt.setString(3, elementTag);
+//            stmt.setString(4, elementStateItem.getKey());
+//            stmt.setString(5, elementStateItem.getValue());
+//            stmt.setString(6, elementDomId);
+//            stmt.setString(7, elementDomClass);
+//
+//            stmt.execute();
+//
+
+
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());

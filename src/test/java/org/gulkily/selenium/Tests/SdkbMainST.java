@@ -16,7 +16,7 @@ import java.util.List;
 public class SdkbMainST extends SeleniumBase {
 
     @Test
-    public void shutterstockHomeTest() {
+    public void sdkbHomeTest() {
         // Create a new WebDriver instance
         // Notice that the remainder of the code relies on the interface,
         // not the implementation.
@@ -37,8 +37,20 @@ public class SdkbMainST extends SeleniumBase {
             List <String> brokenLinks = SeleniumUtils.findBrokenLinks(driver);
             List <String> brokenImages = SeleniumUtils.findBrokenImages(driver);
 
-            System.out.println("Broken links: " + brokenLinks.size());
-            System.out.println("Broken images: " + brokenImages.size());
+            if (brokenLinks.size() > 0) {
+                for (int i = 0; i < brokenLinks.size(); i++) {
+                    String brokenLinkUrl = brokenLinks.get(i);
+                    SeleniumSnapshot.logError("Broken link: " + brokenLinkUrl);
+                }
+            }
+
+            if (brokenImages.size() > 0) {
+                for (int i = 0; i < brokenImages.size(); i++) {
+                    String brokenImageUrl = brokenImages.get(i);
+                    SeleniumSnapshot.logError("Broken link: " + brokenImageUrl);
+                }
+            }
+
         }
     }
 }
