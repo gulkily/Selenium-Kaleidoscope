@@ -1,15 +1,11 @@
-Selenium-Kaleidoscope
-=====================
+Selenium-Utilities
+==================
 
 A set of Selenium WebDriver utilities to facilitate test-writing.
 
 ### Requirements
 
 Database server. Currently written with MySQL in mind.
-
-### Status
-
-Proof-of-concept, still in development.
 
 ### About the Maven Template
 
