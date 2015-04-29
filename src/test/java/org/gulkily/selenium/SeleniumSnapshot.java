@@ -214,6 +214,10 @@ public class SeleniumSnapshot {
             String elementDomId = element.getAttribute("id");
             String elementDomClass = element.getAttribute("class");
 
+            System.out.println(elementTag);
+            System.out.println(elementDomId);
+            System.out.println(elementDomClass);
+
             HashMap <String, String> elementState = getElementState(element);
 
             for (Map.Entry<String, String> elementStateItem : elementState.entrySet()) {
@@ -295,7 +299,7 @@ public class SeleniumSnapshot {
         for (WebElement el : allPageElements) {
             elementId++;
 
-            System.out.print("Recording element " + elementId + "/" + elementCount + "... ");
+            System.out.println("Recording element " + elementId + "/" + elementCount + "... ");
 
             recordElementState(el, elementId, snapshotId, testName);
         }

@@ -1,4 +1,4 @@
-package org.gulkily.selenium.Tests;
+package org.gulkily.selenium;
 
 import com.lazerycode.selenium.ScreenshotListener;
 import com.lazerycode.selenium.SeleniumBase;
@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Listeners(ScreenshotListener.class)
-public class NationbuilderMainST extends SeleniumBase {
+public class ShutterstockMainST extends SeleniumBase {
 
     @Test
     public void shutterstockHomeTest() {
@@ -24,28 +24,21 @@ public class NationbuilderMainST extends SeleniumBase {
 
         List <Dimension> dimList = new LinkedList<Dimension>();
 
-        List <String> urlList = new LinkedList<String>();
-
         dimList.add(new Dimension(1024, 768));
         dimList.add(new Dimension(1280, 1024));
 
-        urlList.add("http://nationbuilder.com/revolution_in_scotland");
+        for (Dimension d : dimList) {
+            driver.manage().window().setSize(d);
 
-        for (String url : urlList) {
-            for (Dimension d : dimList) {
-                driver.manage().window().setSize(d);
+            driver.get("http://www.shutterstock.com/");
 
-                driver.get(url);
+            SeleniumSnapshot.takePageSnapshot(driver, "shutterstockHomeTest", "init");
 
-                SeleniumSnapshot.takePageSnapshot(driver, "NationbuilderMainST", url);
+            List <String> brokenLinks = SeleniumUtils.findBrokenLinks(driver);
+            List <String> brokenImages = SeleniumUtils.findBrokenImages(driver);
 
-                List<String> brokenLinks = SeleniumUtils.findBrokenLinks(driver);
-                List<String> brokenImages = SeleniumUtils.findBrokenImages(driver);
-
-                System.out.println("Broken links: " + brokenLinks.size());
-                System.out.println("Broken images: " + brokenImages.size());
-            }
-
+            System.out.println("Broken links: " + brokenLinks.size());
+            System.out.println("Broken images: " + brokenImages.size());
         }
     }
 }
