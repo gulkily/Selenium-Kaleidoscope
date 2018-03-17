@@ -9,7 +9,9 @@ Database server. Currently written with MySQL in mind.
 
 ### Direct Link To Relevant Code
 
-/src/test/java/org/gulkily/selenium
+./src/test/java/org/gulkily/selenium/
+
+[src/test/java/org/gulkily/selenium/](./src/test/java/org/gulkily/selenium/)
 
 ### About the Maven Template
 
