@@ -7,6 +7,10 @@ A set of Selenium WebDriver utilities to facilitate test-writing.
 
 Database server. Currently written with MySQL in mind.
 
+### Direct Link To Relevant Code
+
+/src/test/java/org/gulkily/selenium
+
 ### About the Maven Template
 
 The Maven project template is based on https://www.github.com/Ardesco/Selenium-Maven-Template.
