@@ -13,6 +13,8 @@ Database server. Currently written with MySQL in mind.
 
 [src/test/java/org/gulkily/selenium/](./src/test/java/org/gulkily/selenium/)
 
+(Listed twice for accessibility.)
+
 ### About the Maven Template
 
 The Maven project template is based on https://www.github.com/Ardesco/Selenium-Maven-Template.
